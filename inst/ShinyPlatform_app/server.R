@@ -25,12 +25,19 @@ server <- function(input, output, session) {
 #Update the header values
 
 
+       if(DEBUG) {print("going to get_app_and_user_info \n")}
+
+
       storedData$logouturl <-logout_url
 
     #once we have a token we will get app and user info, and verify user is in user apps
      #Add code to send and check check state
 
-   storedData$user <- renderText(get_app_and_user_info(session,app_url, app_client_id,app_secret,domain,storedData,debug=DEBUG))
+   #storedData$user <- renderText(get_app_and_user_info(session,app_url, app_client_id,app_secret,domain,storedData,DEBUG=DEBUG))
+
+      get_app_and_user_info(session,app_url, app_client_id,app_secret,domain,storedData,DEBUG=DEBUG)
+
+   if(DEBUG) {print("returned from get_app_and_user_info \n")}
 
     output$debug <-   renderMenu({
                        if(DEBUG) {
@@ -47,9 +54,9 @@ server <- function(input, output, session) {
 
 
 
-    callModule(module = homeTab, id = "home",session = session,storedData = storedData )
-    callModule(module = usersTab,id = "user",session = session,storedData = storedData)
-     callModule(module = debugTab, id = "debug",session = session,storedData= storedData)
+    callModule(module = homeTab,  id = "home", session = session,storedData = storedData)
+    callModule(module = usersTab, id = "users", session = session,storedData = storedData)
+    callModule(module = debugTab, id = "debug",session = session,storedData = storedData)
 
 
     #callModule(dash,"dash",parent=session,parentInput=input,storedData)

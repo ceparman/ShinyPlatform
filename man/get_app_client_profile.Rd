@@ -4,14 +4,14 @@
 \alias{get_app_client_profile}
 \title{get_app_client_profile}
 \usage{
-get_app_client_profile(access_token, app_client_id, domain)
+get_app_client_profile(access_token, client_id, domain)
 }
 \arguments{
 \item{access_token}{Auth0 app api access token.}
 
-\item{app_client_id}{app client id.}
-
 \item{domain}{Auth0 domain.}
+
+\item{app_client_id}{app client id.}
 }
 \value{
 returns client response for app.

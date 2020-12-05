@@ -3,7 +3,7 @@
 #' @param app_url Auth0 app url
 #' @param app_client_id Auth0 app client id
 #' @param app_secret Auth0 app secret
-#' @param Domain Auth0 app domain
+#' @param domain Auth0 app domain
 #' @param code Auth0 app authorization code
 #' @return Returns authorization token used to read user and app data
 #' @details Details
@@ -21,14 +21,14 @@
 #' @export
 #' @importFrom jsonlite toJSON
 #' @importFrom httr POST
-get_authentication_token <- function(app_url, app_client_id,app_secret,domain,code){
+get_authentication_token <- function(app_url, app_client_id,client_secret,domain,code){
 
 
   jdata <- list(
     "grant_type" ="authorization_code",
     "code"= code,
     "client_id" = app_client_id,
-    "client_secret" = app_secret,
+    "client_secret" = client_secret,
     "redirect_uri" = app_url
   )
 

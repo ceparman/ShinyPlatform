@@ -25,17 +25,18 @@ source("ui_app.R")
 
 #print(config::get())
 
+options(shiny.port = 8100)
 
 #read app information
 
 app_url <- URLencode(config::get("app_url"))
-app_client_id  <- config::get("app_client_id")
-app_secret <-  config::get("app_secret")
-domain <- config::get("Domain")
+client_id  <- config::get("client_id")
+client_secret <-  config::get("client_secret")
+domain <- config::get("domain")
 logout_url <- URLencode(config::get("logout_url"))
 timeout <- config::get("timeoput")
 DEBUG <- config::get("debug")
-
+api_audence <- config::get("api_audience")
 
 ADMIN = config::get("admin")
 
@@ -44,7 +45,7 @@ ADMIN = config::get("admin")
 
 inactivity <- paste0(
   "function idleTimer() {
-  var t = setTimeout(logout, 5000);
+  var t = setTimeout(logout, 50000);
   window.onmousemove = resetTimer; // catches mouse movements
   window.onmousedown = resetTimer; // catches mouse movements
   window.onclick = resetTimer;     // catches mouse clicks
@@ -59,7 +60,7 @@ inactivity <- paste0(
   "
   function resetTimer() {
     clearTimeout(t);
-    t = setTimeout(logout,'","5000","');  // time is in milliseconds (1000 is 1 second)
+    t = setTimeout(logout,'","50000","');  // time is in milliseconds (1000 is 1 second)
   }
 }
 idleTimer();"

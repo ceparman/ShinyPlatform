@@ -3,9 +3,7 @@ homeTabUI <- function(id){
 
   ns <- NS(id)
 
-  tagList(
-    h3("home")
-   )
+    h3("Home")
 
 }
 
@@ -13,5 +11,7 @@ homeTabUI <- function(id){
 homeTab <- function(input,output,session,storedData)
   {
 
+
+  ns <- session$ns
 
 }

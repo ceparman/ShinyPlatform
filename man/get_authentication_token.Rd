@@ -4,18 +4,18 @@
 \alias{get_authentication_token}
 \title{FUNCTION_TITLE}
 \usage{
-get_authentication_token(app_url, app_client_id, app_secret, domain, code)
+get_authentication_token(app_url, app_client_id, client_secret, domain, code)
 }
 \arguments{
 \item{app_url}{Auth0 app url}
 
 \item{app_client_id}{Auth0 app client id}
 
-\item{app_secret}{Auth0 app secret}
+\item{domain}{Auth0 app domain}
 
 \item{code}{Auth0 app authorization code}
 
-\item{Domain}{Auth0 app domain}
+\item{app_secret}{Auth0 app secret}
 }
 \value{
 Returns authorization token used to read user and app data

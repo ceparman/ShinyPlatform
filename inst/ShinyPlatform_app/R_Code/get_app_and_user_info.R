@@ -7,13 +7,13 @@ get_app_and_user_info <-
            app_secret,
            Domain,
            storedData,
-           debug = F)
+           DEBUG = T)
   {
 
 
 
 
-
+    if(DEBUG) {print("In get_app_and_user_info \n")}
 
 
     #decrypt db credentials
@@ -36,8 +36,9 @@ get_app_and_user_info <-
       params <-
         shiny::parseQueryString(isolate(session$clientData$url_search))
 
-      if (debug)
-        print(params$code)
+      if (DEBUG)
+
+         print(params$code)
 
 
       #Get Auth token
@@ -48,14 +49,20 @@ get_app_and_user_info <-
 
       token <- httr::content(t)
 
+      if (DEBUG){
+        print("Token")
+        print(str(token))
+      }
+
       #Get user profile info
 
       profile <-
         ShinyPlatform::get_user_profile(token$access_token, token$id_token, Domain)
 
-      if (debug)
+      if (DEBUG){
+        print("User Profile")
         print(profile)
-
+      }
 
       #Get App token
 
@@ -65,7 +72,7 @@ get_app_and_user_info <-
         ShinyPlatform::get_app_api_token(app_client_id, app_secret, Domain)
 
 
-      if (debug)
+      if (DEBUG)
         print(api_tokens)
 
       #Get app (client) metadata
@@ -73,16 +80,16 @@ get_app_and_user_info <-
       client <-
         ShinyPlatform::get_app_client_profile(api_tokens$access_token, app_client_id, Domain)
 
-      if (debug)
+      if (DEBUG)
         print("client")
 
-      if (debug)
+      if (DEBUG)
         print(client)
 
-      if (debug)
+      if (DEBUG)
         print("creds")
 
-      if (debug)
+      if (DEBUG)
         print(jsonlite::fromJSON(safer::decrypt_string(client$client_metadata$creds)))
 
 
@@ -97,7 +104,7 @@ get_app_and_user_info <-
 
 
 
-      if (debug)
+      if (DEBUG)
         print(profile$user_metadata$barcode)
 
 
@@ -106,10 +113,10 @@ get_app_and_user_info <-
 
     },
     error = function(cond) {
-      # return (paste("Login Error", cond))
+       return (paste("Login Error", cond))
     })
 
-
+  print(token)
 
 
   }

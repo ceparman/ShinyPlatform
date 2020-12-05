@@ -21,9 +21,9 @@
 #' @export
 #' @importFrom jsonlite fromJSON
 #' @importFrom httr GET content
-get_app_client_profile <- function(access_token,app_client_id,domain){
+get_app_client_profile <- function(access_token,client_id,domain){
 
- # id_strings <- strsplit(id_token, ".", fixed = TRUE)
+  # id_strings <- strsplit(id_token, ".", fixed = TRUE)
 
   id_strings <- strsplit(access_token, ".", fixed = TRUE)
 

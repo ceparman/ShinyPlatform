@@ -25,10 +25,10 @@ ui <- function(req) {
 
     #create url for Auth0 login
 
-    auth_url <- paste0("https://",domain,"/authorize?response_type=code&client_id=",app_client_id,
+    auth_url <- paste0("https://",domain,"/authorize?response_type=code&client_id=",client_id,
                        "&redirect_uri=",app_url,"&scope=openid%20profile&state=xyzABC123")
 
-
+     if(DEBUG) print(auth_url)
 
     #go to login
 
