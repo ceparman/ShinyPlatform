@@ -1,44 +1,62 @@
-# OAuth setup --------------------------------------------------------
 
-# Most OAuth applications require that you redirect to a fixed and known
-# set of URLs. Many only allow you to redirect to a single URL: if this
-# is the case for, you'll need to create an app for testing with a localhost
-# url, and an app for your deployed app.
+auth0_ui(
 
 
-# Shiny -------------------------------------------------------------------
+  dashboardPage(
+    dashboardHeader(
+      title = "ShinyPlatform Demo Instance",
+
+
+      tags$li(class = "dropdown",  HTML(paste(
+        "User", textOutput("user")
+      ))),
+
+
+      tags$li(
+        class = "dropdown",
+        actionButton(
+          "logout",
+          "Log Out",
+          class = "btn btn-success",
+          onclick = paste0("location.href='", logout_url, "';")
+        )
+      )
+
+
+    ),
 
 
 
-# A little-known feature of Shiny is that the UI can be a function, not just
-# objects. You can use this to dynamically render the UI based on the request.
-# We're going to pass this uiFunc, not ui, to shinyApp(). If you're using
-# ui.R/server.R style files, that's fine too--just make this function the last
-# expression in your ui.R file.
-ui <- function(req) {
-  if(DEBUG) print("Query String")
-  if(DEBUG) print(req$QUERY_STRING)
-  if(DEBUG) print(ls(req))
+    dashboardSidebar(
+      h3("Menu"),
+
+      sidebarMenu(
+        menuItem("Home", tabName = "home"),
+        menuItemOutput("users"),
+        menuItemOutput("debug")
+      )
+    ),
+    dashboardBody(
+      tagList(tags$script(inactivity)),
+
+      tabItems(
+        tabItem(
+          "home",
+          homeTabUI("home")),
+        tabItem(
+          "users",
+          usersTabUI("users")
+        ),
+        tabItem(
+          "debug",
+          debugTabUI("debug")
+        )
+      )
+
+    )
 
 
-  if (!ShinyPlatform::has_auth_code(parseQueryString(req$QUERY_STRING))) {
+  ),
+  info = a0_info
+)
 
-    #create url for Auth0 login
-
-    auth_url <- paste0("https://",domain,"/authorize?response_type=code&client_id=",client_id,
-                       "&redirect_uri=",app_url,"&scope=openid%20profile&state=xyzABC123")
-
-     if(DEBUG) print(auth_url)
-
-    #go to login
-
-    redirect <- sprintf("location.replace(\"%s\");", auth_url)
-    tags$script(HTML(redirect))
-  }
-
-
-  else {
-    #we have authcode parmamter display app ui
-    ui_app()
-  }
-}

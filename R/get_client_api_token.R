@@ -1,6 +1,6 @@
 
 
-#' @title get_app_api_token
+#' @title get_client_api_token
 #' @description Get app api token used to read app profile
 #' @param client_id Auth0 app client id
 #' @param client_secret Auth0 app secret
@@ -10,7 +10,7 @@
 #' @examples
 #' \dontrun{
 #' if(interactive()){
-#'  api_tokens<-get_app_api_token(app_client_id,app_secret,Domain)
+#'  api_tokens<-get_client_api_token(app_client_id,app_secret,Domain)
 #'
 #'client<-  get_client_profile(api_tokens$access_token,app_client_id,Domain)
 #'
@@ -23,7 +23,7 @@
 #' @export
 #' @importFrom httr POST content
 #' @importFrom jsonlite toJSON
-get_app_api_token <- function(client_id,client_secret,domain){
+get_client_api_token <- function(client_id,client_secret,domain){
 
 
 
@@ -34,7 +34,6 @@ get_app_api_token <- function(client_id,client_secret,domain){
 
   body <- list( client_id = client_id,
                 client_secret = client_secret,
-                #audience = "https://ngsanalytics.auth0.com/api/v2/",
                 audience =  paste0("https://",domain,"/api/v2/"),
                 grant_type = "client_credentials"
                 )

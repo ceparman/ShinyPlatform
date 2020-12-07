@@ -6,16 +6,16 @@ debugTabUI <- function(id){
 
   fluidRow(
     box(
-      h3("Params"),
-      textOutput(ns("params"))
+      h3("auth credentials"),
+      verbatimTextOutput(ns("creds"))
     ),
 
     box(
-      h3("Logout URL"),
-      textOutput(ns("logouturl"))
+      h3("Client Info"),
+      textOutput(ns("clientinfo"))
     ),
     box(
-      h3("user Data"),
+      h3("User Profile"),
       textOutput(ns("userdata"))
     )
 
@@ -27,16 +27,19 @@ debugTabUI <- function(id){
 }
 
 
-debugTab <- function(input,output,session,storedData)
+debugTab <- function(input,output,session)
   {
 
+print(session$userData$auth0_credentials)
 
 
-output$params <- renderPrint(print(storedData$params))
 
-output$logouturl <- renderPrint(print(storedData$logouturl))
+output$creds<- renderPrint(print(session$userData$auth0_credentials))
 
-output$userdata <- renderPrint( print(storedData$user))
+output$clientinfo<- renderPrint(print(session$userData$client))
+
+output$userdata <- renderPrint( print(session$userData$profile))
+
 
 
 }

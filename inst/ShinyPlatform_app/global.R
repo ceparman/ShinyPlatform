@@ -8,6 +8,7 @@ library(httr)
 library(digest)
 library(jose)
 library(config)
+library(auth0)
 
 
 
@@ -26,6 +27,8 @@ source("ui_app.R")
 #print(config::get())
 
 options(shiny.port = 8100)
+
+
 
 #read app information
 
