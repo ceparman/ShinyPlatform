@@ -23,15 +23,9 @@
 #' @importFrom httr GET content
 get_app_client_profile <- function(access_token,client_id,domain){
 
-  # id_strings <- strsplit(id_token, ".", fixed = TRUE)
-
-  id_strings <- strsplit(access_token, ".", fixed = TRUE)
-
-  user_info<-jsonlite::fromJSON(rawToChar(base64url_decode(id_strings[[1]][2])))
 
 
-
-  client_url<- URLencode(paste0("https://",domain,"/api/v2/clients/",app_client_id))
+  client_url<- URLencode(paste0("https://",domain,"/api/v2/clients/",client_id))
 
   header<-  c( Authorization =  paste0("Bearer ", access_token))
 

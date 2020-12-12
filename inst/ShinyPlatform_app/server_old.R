@@ -4,19 +4,23 @@ auth0_server(function(input, output, session) {
  observe({
 
 #Store authoization data
-    auth0::auth0_info()
+
+   auth0::auth0_info()
+   print(session$userData)
+
+
 #get user details
 
-   session$userData$profile <-
-     ShinyPlatform::get_user_profile(session$userData$auth0_credentials$access_token, session$userData$auth0_credentials$id_token, domain)
+##   session$userData$profile <-
+ #    ShinyPlatform::get_user_profile(session$userData$auth0_credentials$access_token, session$userData$auth0_credentials$id_token, domain)
 
-   print(session$userData$profile)
+#   print(session$userData$profile)
 
- output$users <-   renderMenu({
-        if(session$userData$profile$app_metadata == "admin")  {
-          menuItem("Manage Users",tabName = "users")
-         }
-        })
+# output$users <-   renderMenu({
+#        if(session$userData$profile$app_metadata == "admin")  {
+#          menuItem("Manage Users",tabName = "users")
+#         }
+#        })
 
 
 #get app details
@@ -83,7 +87,7 @@ auth0_server(function(input, output, session) {
 
     callModule(module = homeTab,  id = "home" )
     callModule(module = usersTab, id = "users")
-    callModule(module = debugTab, id = "debug")
+    callModule(module = debugTab, id = "debug",session = session)
 
 
 
@@ -93,4 +97,4 @@ auth0_server(function(input, output, session) {
 
 
 
-}, info = a0_info)
+}, info = a0_info )

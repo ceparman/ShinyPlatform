@@ -17,6 +17,10 @@ debugTabUI <- function(id){
     box(
       h3("User Profile"),
       textOutput(ns("userdata"))
+    ),
+    box(
+      h3("App Profile"),
+      textOutput(ns("appdata"))
     )
 
   )
@@ -30,17 +34,17 @@ debugTabUI <- function(id){
 debugTab <- function(input,output,session)
   {
 
-print(session$userData$auth0_credentials)
+#print(session$userData$auth0_credentials)
 
 
 
-output$creds<- renderPrint(print(session$userData$auth0_credentials))
+output$creds<- renderPrint({session$userData$auth0_credentials})
 
-output$clientinfo<- renderPrint(print(session$userData$client))
+output$clientinfo<- renderPrint(session$userData$auth0_info)
 
-output$userdata <- renderPrint( print(session$userData$profile))
+output$userdata <- renderPrint( session$userData$profile)
 
-
+output$appdata <- renderPrint( session$userData$client)
 
 }
 

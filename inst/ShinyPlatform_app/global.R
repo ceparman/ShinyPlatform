@@ -2,6 +2,7 @@
 library(shiny)
 library(shinydashboard)
 library(ShinyPlatform)
+library(shinyBS)
 library(httr)
 library(shinyjs)
 library(httr)
@@ -17,9 +18,9 @@ library(auth0)
 source("R_Code/sourceDir.R")
 sourceDir("R_Code/")
 sourceDir("Modules/")
-source("ui_app.R")
 
-# print("config")
+
+ print("config")
 # print(is_active("default"))
 # print(is_active("local"))
 # print(is_active("shinyapps"))
@@ -28,7 +29,7 @@ source("ui_app.R")
 
 options(shiny.port = 8100)
 
-
+a0_info <- auth0::auth0_info()
 
 #read app information
 
