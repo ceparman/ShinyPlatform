@@ -10,6 +10,9 @@ library(digest)
 library(jose)
 library(config)
 library(auth0)
+library(jsonlite)
+library(safer)
+library(mongolite)
 
 
 

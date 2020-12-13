@@ -4,18 +4,17 @@ source("./global.R")
 ui <-
   dashboardPage(
     dashboardHeader(
+
+
       title = "ShinyPlatform Demo Instance",
 
 
-      tags$li(class = "dropdown",  HTML(paste(
-        "User", textOutput("user")
-      )))
-
+      dropdownMenuOutput("statusmenu")
       ,
 
 
       tags$li(
-         class = "dropdown",
+      class = "dropdown",
          actionButton(
            "logout",
            "Log Out",
@@ -24,7 +23,8 @@ ui <-
          )
       )
 
-    ),
+    )
+    ,
 
 
 
@@ -61,6 +61,10 @@ ui <-
 
 server <- function(input, output, session) {
 
+#local reactive values
+
+status_info <-  reactiveValues()
+
 #get User Profile
 
   session$userData$profile <-
@@ -72,10 +76,18 @@ server <- function(input, output, session) {
 
 #get App metadata
 
-
   api_tokens <- ShinyPlatform::get_client_api_token(client_id, client_secret, domain)
 
   session$userData$client <- ShinyPlatform::get_app_client_profile(api_tokens$access_token,client_id,domain)
+
+# Create database connection
+
+  db_creds <- jsonlite::fromJSON(safer::decrypt_string(session$userData$client$client_metadata$creds))[[session$userData$profile$app_metadata$role]]
+
+
+  url_path = paste0("mongodb+srv://",db_creds$user,":",db_creds$pass,"@cluster0-wz8ra.mongodb.net/","lims_development")
+
+  db_connection <- mongo(db="lims_development",url = url_path ,collection = "metadb",verbose = T)
 
 
 
@@ -93,6 +105,47 @@ server <- function(input, output, session) {
         }
        })
 
+#Header Data outputs
+
+
+output$statusmenu <- renderMenu({
+ dropdownMenu(type = "notifications",
+
+   notificationItem(
+    text = paste("User:",session$userData$profile$nickname),
+    icon("users")
+  ),
+
+  notificationItem(
+    text = paste("Role:",session$userData$profile$app_metadata$role),
+    icon("user-tag")
+  ),
+
+  notificationItem(
+    text = paste("db Connection:",
+                 ifelse(exists("db_connection"),
+                 "dB Connected",
+                 "No db Connection")
+                ),
+    icon("database")
+  )
+)
+})
+
+
+#output$username <- renderText(session$userData$profile$nickname)
+
+#output$userrole <- renderText(session$userData$profile$app_metadata$role)
+
+#output$dbstatus <- renderText({
+#                   ifelse(exists("db_connection"),"dB Connected",
+#                          "No db Connection")
+#})
+
+output$dbstatus <- renderPrint({ ifelse(exists("db_connection"),"dB Connected",
+                              "No db Connection")})
+
+#Call Modules
 
   callModule(module = homeTab,  id = "home" )
   callModule(module = usersTab, id = "users")
