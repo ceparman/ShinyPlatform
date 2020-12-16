@@ -21,6 +21,9 @@ debugTabUI <- function(id){
     box(
       h3("App Profile"),
       textOutput(ns("appdata"))
+    ),box(
+      h3("metadb"),
+      textOutput(ns("dbdata"))
     )
 
   )
@@ -46,5 +49,5 @@ output$userdata <- renderPrint( session$userData$profile)
 
 output$appdata <- renderPrint( session$userData$client)
 
+output$dbdata <- renderPrint( session$userData$db$metadb)
 }
-

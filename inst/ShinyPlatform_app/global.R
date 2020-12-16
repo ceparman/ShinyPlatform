@@ -13,6 +13,7 @@ library(auth0)
 library(jsonlite)
 library(safer)
 library(mongolite)
+library(DT)
 
 
 
@@ -46,6 +47,10 @@ DEBUG <- config::get("debug")
 api_audence <- config::get("api_audience")
 
 ADMIN = config::get("admin")
+
+dbscheme <-  config::get("dbscheme")
+dbinstance <-  config::get("dbinstance")
+dbname <-  config::get("dbname")
 
 
 #JS to timeout app

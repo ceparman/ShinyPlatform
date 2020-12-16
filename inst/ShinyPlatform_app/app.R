@@ -34,6 +34,7 @@ ui <-
       sidebarMenu(
         menuItem("Home", tabName = "home"),
         menuItemOutput("users"),
+        menuItemOutput("entities"),
         menuItemOutput("debug")
       )
     ),
@@ -47,6 +48,11 @@ ui <-
         tabItem(
           "users",
           usersTabUI("users")
+        ),
+
+        tabItem(
+          "entities",
+          entitiesTabUI("entities")
         ),
         tabItem(
           "debug",
@@ -89,8 +95,9 @@ status_info <-  reactiveValues()
 
   db_connection <- mongo(db="lims_development",url = url_path ,collection = "metadb",verbose = T)
 
+  session$userData$db$metadb <-  db_connection
 
-
+#Add Debug Tab
 
   output$debug <-   renderMenu({
     if(DEBUG) {
@@ -98,12 +105,22 @@ status_info <-  reactiveValues()
     }
   })
 
+#Add Users Tab
 
   output$users <-   renderMenu({
         if(ADMIN) {
          menuItem("Manage Users",tabName = "users")
         }
        })
+
+#Add entities Tab
+
+  output$entities <-   renderMenu({
+    if(ADMIN) {
+      menuItem("Manage Entities",tabName = "entities")
+    }
+  })
+
 
 #Header Data outputs
 
@@ -133,23 +150,13 @@ output$statusmenu <- renderMenu({
 })
 
 
-#output$username <- renderText(session$userData$profile$nickname)
-
-#output$userrole <- renderText(session$userData$profile$app_metadata$role)
-
-#output$dbstatus <- renderText({
-#                   ifelse(exists("db_connection"),"dB Connected",
-#                          "No db Connection")
-#})
-
-output$dbstatus <- renderPrint({ ifelse(exists("db_connection"),"dB Connected",
-                              "No db Connection")})
 
 #Call Modules
 
   callModule(module = homeTab,  id = "home" )
   callModule(module = usersTab, id = "users")
-  callModule(module = debugTab, id = "debug",session = session)
+  callModule(module = entitiesTab, id = "entities")
+  callModule(module = debugTab, id = "debug")
 
 
 
