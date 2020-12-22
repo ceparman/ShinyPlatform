@@ -3,8 +3,8 @@ source("./global.R")
 
 ui <-
   dashboardPage(
-    dashboardHeader(
 
+    dashboardHeader(
 
       title = "ShinyPlatform Demo Instance",
 
@@ -39,6 +39,7 @@ ui <-
       )
     ),
     dashboardBody(
+      useShinyjs(),
       tagList(tags$script(inactivity)),
 
       tabItems(
@@ -90,6 +91,10 @@ status_info <-  reactiveValues()
 
   db_creds <- jsonlite::fromJSON(safer::decrypt_string(session$userData$client$client_metadata$creds))[[session$userData$profile$app_metadata$role]]
 
+  session$userData$db$creds <-  db_creds
+
+
+  ####Remove hard coded db connections
 
   url_path = paste0("mongodb+srv://",db_creds$user,":",db_creds$pass,"@cluster0-wz8ra.mongodb.net/","lims_development")
 
