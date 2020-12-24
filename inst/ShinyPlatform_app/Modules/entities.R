@@ -25,7 +25,7 @@ entitiesTabUI <- function(id){
          tabPanel("Add Entitiy",
                   "Add Entity",
                   textInput(ns("e_name"),"Name"),
-                  textInput(ns("e_table"),"Table"),
+                  selectInput(ns("e_table"),"Table",choices =  paste0(lims_types,"db")),
                   textInput(ns("e_type"),"Type"),
                   textInput(ns("e_bcprefix"),"Bar Code Prefix"),
                   actionButton(ns("insertBtn"), "Add Attribute"),
@@ -49,15 +49,80 @@ ns <- session$ns
 
 inserted <- c()
 
+Shiny.setInputValue(\"select_button\", this.id, {priority: \"event\"})
+
 #Existing Entities Tab
 
-configuted_entities <- reactiveVal(
-                      list_meta_data_documents(dbname,session$userData$db$creds ,
+configuted_entities <- reactiveVal({
+
+                         entities <- list_meta_data_documents(dbname,session$userData$db$creds ,
                                                dbscheme,dbinstance)[,c("name","table","type")]
+                 n_entities <- nrow(entities)
 
-                      )
+                 entities$Edit = shinyInputModules(actionButton, n_entities, 'button_',ns, label = "Edit",
+                                               onclick = paste0('Shiny.onInputChange(\"',ns("edit_button"),'\",  this.id)' ))
 
-output$existing_entities <- DT::renderDT(DT::datatable(configuted_entities()))
+                 entities$Delete = shinyInputModules(actionButton, n_entities, 'button_',ns, label = "Delete",
+                                                 onclick = paste0('Shiny.onInputChange(\"',ns("delete_button"),'\",  this.id)' ))
+
+                   entities
+                     }
+
+  )
+
+deleteUserModal <- function(session,entity_name){
+  ns <- session$ns
+  modalDialog(paste("Do you wantp to delete enitity" ,entity_name,"?"),
+         actionButton(ns("deleteEntityBtn"), "Delete"))
+}
+
+observeEvent(input$delete_button, {
+  selectedRow <- as.numeric(strsplit(input$delete_button, "_")[[1]][2])
+  entity_name <- list_meta_data_documents(dbname,session$userData$db$creds ,
+                           dbscheme,dbinstance)$name[selectedRow]
+
+  showModal(deleteUserModal(session, entity_name))
+  print(selectedRow)
+
+})
+
+observeEvent(input$deleteEntityBtn,{
+
+  selectedRow <- as.numeric(strsplit(input$delete_button, "_")[[1]][2])
+  entity_name <- list_meta_data_documents(dbname,session$userData$db$creds ,
+                                          dbscheme,dbinstance)$name[selectedRow]
+  print(entity_name)
+
+  #Remove entry
+  remove_meta_data_document(database,session$userData$db$creds,
+                            dbscheme,dbinstance,entity_name)
+
+
+  #update configured entities
+
+  entities <- list_meta_data_documents(dbname,session$userData$db$creds ,
+                                       dbscheme,dbinstance)[,c("name","table","type")]
+  n_entities <- nrow(entities)
+
+  entities$Edit = shinyInputModules(actionButton, n_entities, 'button_',ns, label = "Edit",
+                                    onclick = paste0('Shiny.onInputChange(\"',ns("edit_button"),'\",  this.id)' ))
+
+  entities$Delete = shinyInputModules(actionButton, n_entities, 'button_',ns, label = "Delete",
+                                      onclick = paste0('Shiny.onInputChange(\"',ns("delete_button"),'\",  this.id)' ))
+
+  configuted_entities( entities)
+
+
+
+  #remove modal
+  removeModal()
+})
+
+
+output$existing_entities <- DT::renderDT(configuted_entities() ,
+                            server = FALSE, escape = FALSE, selection = 'none'
+                                 )
+
 
 
 #Add Entity
@@ -86,10 +151,10 @@ observeEvent(input$insertBtn, {
           ),
 
           column(4,
-                 textAreaInput(ns(paste0("filed_vocab_", btn)),label = "Controlled Vocabulary",
+                 textAreaInput(ns(paste0("fieldvocab_", btn)),label = "Controlled Vocabulary",
                                placeholder="Enter comma separated values, string types only")
           ), column(1,
-                    checkboxInput(ns(paste0("field_req_", btn)),label = "Required",value = T)
+                    checkboxInput(ns(paste0("fieldreq_", btn)),label = "Required",value = T)
           )
         )
       ),
@@ -134,6 +199,8 @@ observeEvent(input$removeBtn, {
 
 })
 
+
+##Remove selected Rows
 observeEvent(input$removeBtn, {
   #find rows with remove selected
 
@@ -198,8 +265,95 @@ observeEvent(input$all_reset, {
   }
 
 
+})
+
+
+##Create new Entity in db
+
+observeEvent(input$e_create,{
+
+#Validate entry
+  #Are all fields filled in?
+
+  #Does the name exist
+
+  existing_entries <- list_meta_data_documents(dbname, session$userData$db$creds,dbscheme,dbinstance)
+
+
+  if(input$e_name == "" ) {
+
+    showModal(modalDialog(h3("Entity Name Required"),title = "Error"))
+
+  }
+
+  if(input$e_name %in%  existing_entries$name ) {
+
+    showModal(modalDialog(h3("Entity Name Already Exixts"),title = "Error"))
+
+  }
+
+  #Does the BC prefix exist
+
+  if(input$e_bcprefix == "" ) {
+
+    showModal(modalDialog(h3("Bar Code Prefix Required"),title = "Error"))
+
+  }
+
+
+  if(input$e_bcprefix %in%  existing_entries$bcprefix ) {
+
+    showModal(modalDialog(h3("Entity Bar Code Prefix Already Exixts"),title = "Error"))
+
+  }
+
+
+  #Do all fileds have different names
+
+  #Create fields json object
+if(!is.null(inserted)){
+
+   fields <- list()
+
+   for(i in 1:length(inserted)){
+
+   field <- list(
+
+                name = input[[ paste0("fieldname_", inserted[i]) ]],
+                fieldtype=  input[[ paste0("fieldtype_",inserted[i]) ]],
+                fieldreq =  input[[ paste0("fieldreq_",inserted[i]) ]] ,
+                controled_vocab =  input[[ paste0("fieldvocab_",inserted[i]) ]]
+              )
+
+           fields[[ paste0("field",i)]] <-  field
+
+   }
+
+
+
+
+} else fields <- ""
+
+
+
+  #insert
+
+
+fieldList <- toJSON(fields,auto_unbox = T)
+
+
+result  <- create_metadb_entry(session$userData$db$metadb ,input$e_name,input$e_table,input$e_type,fieldList,input$e_bcprefix)
+
+
+configuted_entities(
+  list_meta_data_documents(dbname,session$userData$db$creds ,
+                           dbscheme,dbinstance)[,c("name","table","type")])
+
 
 })
+
+
+
 
 }
 

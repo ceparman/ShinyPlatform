@@ -19,14 +19,6 @@ ns <- session$ns
 
 #functions
 
-shinyInput <- function(FUN, len, id,ns,...) {
-  inputs <- character(len)
-  for (i in seq_len(len)) {
-    inputs[i] <- as.character(FUN(ns(paste0(id, i)), ...))
-  }
-  inputs
-}
-
 
 
 
@@ -71,13 +63,13 @@ user_table_data <- reactive( {
                                       Email = unlist(lapply(ul,function(x) x$email)),
                                       Status = unlist(lapply(ul,function(x){ ifelse(is.null(x$blocked),"Active",'Suspended')})),
 
-                                     Edit = shinyInput(actionButton, nusers, 'button_',ns, label = "Edit",
+                                     Edit = shinyInputModules(actionButton, nusers, 'button_',ns, label = "Edit",
                                                          onclick = paste0('Shiny.onInputChange(\"',ns("edit_button"),'\",  this.id)' )),
 
-                                     Delete = shinyInput(actionButton, nusers, 'button_',ns, label = "Delete",
+                                     Delete = shinyInputModules(actionButton, nusers, 'button_',ns, label = "Delete",
                                                        onclick = paste0('Shiny.onInputChange(\"',ns("delete_button"),'\",  this.id)' )),
 
-                                     Suspend = shinyInput(actionButton, nusers, 'button_',ns, label ="Change Status",
+                                     Suspend = shinyInputModules(actionButton, nusers, 'button_',ns, label ="Change Status",
                                                          onclick = paste0('Shiny.onInputChange(\"',ns("suspend_button"),'\",  this.id)' )),
 
                            stringsAsFactors = FALSE,
@@ -109,8 +101,4 @@ observeEvent(input$suspend_button, {
 
 
 
-#observeEvent(input$openModalBtn,
-#             ignoreNULL = TRUE,   # Show modal on start up
-#             showModal(userModal(session))
-#)
 }

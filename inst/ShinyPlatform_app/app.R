@@ -96,9 +96,9 @@ status_info <-  reactiveValues()
 
   ####Remove hard coded db connections
 
-  url_path = paste0("mongodb+srv://",db_creds$user,":",db_creds$pass,"@cluster0-wz8ra.mongodb.net/","lims_development")
+  url_path = paste0("mongodb+srv://",db_creds$user,":",db_creds$pass,"@cluster0-wz8ra.mongodb.net/",dbname)
 
-  db_connection <- mongo(db="lims_development",url = url_path ,collection = "metadb",verbose = T)
+  db_connection <- mongo(db=dbname,url = url_path ,collection = "metadb",verbose = T)
 
   session$userData$db$metadb <-  db_connection
 
